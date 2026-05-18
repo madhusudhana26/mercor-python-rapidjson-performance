@@ -69,3 +69,5 @@ target/
 
 # Git Worktree
 .wt/
+
+.ipynb_checkpoints/
