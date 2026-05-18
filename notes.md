@@ -126,3 +126,49 @@ Goal:
 
 \- Maintain reproducibility and correctness
 
+
+
+\## Optimization Experiment
+
+
+
+\### Hypothesis
+
+Repeated UTF-8 conversion and temporary Unicode object creation for byte-input deserialization may contribute measurable overhead during repeated rapidjson.loads() calls.
+
+
+
+\### Experiment
+
+A localized fast-path optimization was attempted for bytes and bytearray inputs in the loads() binding layer by bypassing intermediate Unicode object creation.
+
+
+
+\### Result
+
+The optimization introduced correctness regressions:
+
+\- UTF-32 encoded invalid byte sequences no longer raised UnicodeDecodeError
+
+\- Existing test suite detected semantic regression
+
+
+
+Benchmark results also showed no improvement:
+
+\- Performance became slightly worse
+
+\- Parser core remained dominant runtime hotspot
+
+
+
+\### Decision
+
+The optimization was rejected and reverted.
+
+
+
+\### Engineering Conclusion
+
+The parser implementation is already highly optimized, and aggressive low-level modifications introduce correctness risk disproportionate to expected gains. Correctness and reproducibility were prioritized over unsafe micro-optimizations.
+
